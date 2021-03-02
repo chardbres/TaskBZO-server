@@ -42,6 +42,25 @@ let TaskResolver = class TaskResolver {
             return task;
         });
     }
+    updateTask(id, type, location, dueDate = new Date(), { em }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const task = yield em.findOne(Task_1.Task, { id, type, location, dueDate });
+            if (!task) {
+                return null;
+            }
+            task.type = type;
+            task.location = location;
+            task.dueDate = dueDate;
+            yield em.persistAndFlush(task);
+            return task;
+        });
+    }
+    deleteTask(id, { em }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield em.nativeDelete(Task_1.Task, { id });
+            return true;
+        });
+    }
 };
 __decorate([
     type_graphql_1.Query(() => [Task_1.Task]),
@@ -52,7 +71,7 @@ __decorate([
 ], TaskResolver.prototype, "tasks", null);
 __decorate([
     type_graphql_1.Query(() => Task_1.Task, { nullable: true }),
-    __param(0, type_graphql_1.Arg('id', () => type_graphql_1.Int)),
+    __param(0, type_graphql_1.Arg("id", () => type_graphql_1.Int)),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
@@ -60,14 +79,33 @@ __decorate([
 ], TaskResolver.prototype, "task", null);
 __decorate([
     type_graphql_1.Mutation(() => Task_1.Task),
-    __param(0, type_graphql_1.Arg('type')),
-    __param(1, type_graphql_1.Arg('location')),
-    __param(2, type_graphql_1.Arg('dueDate', () => Date)),
+    __param(0, type_graphql_1.Arg("type", () => String)),
+    __param(1, type_graphql_1.Arg("location", () => String)),
+    __param(2, type_graphql_1.Arg("dueDate", () => Date)),
     __param(3, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], TaskResolver.prototype, "createTask", null);
+__decorate([
+    type_graphql_1.Mutation(() => Task_1.Task, { nullable: true }),
+    __param(0, type_graphql_1.Arg("id", () => Number)),
+    __param(1, type_graphql_1.Arg("type", () => String)),
+    __param(2, type_graphql_1.Arg("location", () => String)),
+    __param(3, type_graphql_1.Arg("dueDate", () => Date)),
+    __param(4, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], TaskResolver.prototype, "updateTask", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("id", () => Number)),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], TaskResolver.prototype, "deleteTask", null);
 TaskResolver = __decorate([
     type_graphql_1.Resolver()
 ], TaskResolver);
