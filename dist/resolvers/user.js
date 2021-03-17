@@ -55,7 +55,16 @@ UserResponse = __decorate([
     type_graphql_1.ObjectType()
 ], UserResponse);
 let UserResolver = class UserResolver {
-    register(username, password, milRank, { em }) {
+    me({ em, req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.id) {
+                return null;
+            }
+            const user = yield em.findOne(User_1.User, { id: req.session.userId });
+            return user;
+        });
+    }
+    register(username, password, milRank, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (username.length <= 2) {
                 return {
@@ -97,14 +106,14 @@ let UserResolver = class UserResolver {
                         ],
                     };
                 }
-                console.log("Message: " + err.message);
             }
+            req.session.userId = user.id;
             return {
                 user,
             };
         });
     }
-    login(username, password, { em }) {
+    login(username, password, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield em.findOne(User_1.User, { username: username });
             if (!user) {
@@ -128,12 +137,21 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
+            req.session.userId = user.id;
+            req.session.randomKey = 'Rick is awesome!';
             return {
                 user,
             };
         });
     }
 };
+__decorate([
+    type_graphql_1.Query(() => User_1.User, { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "me", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Arg("username", () => String)),
