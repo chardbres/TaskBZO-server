@@ -1,6 +1,14 @@
 import { User } from "./../entities/User"
 import { MyContext } from "./../types"
-import { Resolver, Mutation, Arg, Field, Ctx, ObjectType, Query } from "type-graphql"
+import {
+  Resolver,
+  Mutation,
+  Arg,
+  Field,
+  Ctx,
+  ObjectType,
+  Query
+} from "type-graphql"
 import argon2 from "argon2"
 
 @ObjectType()
@@ -76,7 +84,8 @@ export class UserResolver {
     try {
       await em.persistAndFlush(user)
     } catch (err) {
-      if (err.code === "23505" || err.detail.includes("already exists")) {
+      if (err.code === '23505') {
+        console.log(err)
         return {
           errors: [
             {
